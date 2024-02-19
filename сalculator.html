@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <form id="calculatorForm">
+        <label for="depositType">Выберите вид вклада:</label>
+        <select id="depositType">
+            <option value="Пополняемый">Пополняемый</option>
+            <option value="Срочный">Срочный</option>
+        </select><br>
+
+        <label for="depositTerm">Выберите срок вклада:</label>
+        <select id="depositTerm">
+        </select><br>
+
+        <label for="depositAmount">Введите сумму вклада в рублях:</label>
+        <input type="number" id="depositAmount" min="0" required><br>
+
+        <button type="submit">Рассчитать</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("calculatorForm").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            var depositType = document.getElementById("depositType").value;
+            var depositTerm = document.getElementById("depositTerm").value;
+            var depositAmount = parseFloat(document.getElementById("depositAmount").value);
+
+            var interestRates = {
+                "Пополняемый": {"6 месяцев": 0.20, "1 год": 0.22, "1,5 года": 0.15, "2 года": 0.10},
+                "Срочный": {"3 месяца": 0.20, "6 месяцев": 0.22, "9 месяцев": 0.23, "1 год": 0.24, "1,5 года": 0.18, "2 года": 0.15}
+            };
+
+            var interestRate = interestRates[depositType][depositTerm];
+            var finalAmount = depositAmount * (1 + interestRate);
+
+            document.getElementById("result").innerText = `Выбран вид вклада: ${depositType}\nСрок вклада: ${depositTerm}\nСумма вклада: ${depositAmount} руб.\nИтоговая сумма по окончанию срока: ${finalAmount.toFixed(0)} руб.`;
+        });
+
+        document.getElementById("depositType").addEventListener("change", function() {
+            var depositType = document.getElementById("depositType").value;
+            var depositTermSelect = document.getElementById("depositTerm");
+            depositTermSelect.innerHTML = "";
+
+            var depositTerms = {
+                "Пополняемый": ["6 месяцев", "1 год", "1,5 года", "2 года"],
+                "Срочный": ["3 месяца", "6 месяцев", "9 месяцев", "1 год", "1,5 года", "2 года"]
+            };
+
+            depositTerms[depositType].forEach(function(term) {
+                var option = document.createElement("option");
+                option.textContent = term;
+                depositTermSelect.appendChild(option);
+            });
+        });
+
+        document.getElementById("depositType").dispatchEvent(new Event("change"));
+    </script>
+</body>
+</html>
